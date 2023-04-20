@@ -56,3 +56,22 @@ extension ViewController: UIPageViewControllerDataSource {
     }
 }
 
+import SwiftUI
+
+struct Abc: UIViewControllerRepresentable {
+  func makeUIViewController(context: Context) -> ViewController {
+    ViewController()
+  }
+  
+  func updateUIViewController(_ uiViewController: ViewController, context: Context) {
+  }
+  
+  typealias UIViewControllerType = ViewController
+}
+
+struct Abc_Previews: PreviewProvider {
+  static var previews: some View {
+    Abc()
+  }
+}
+
