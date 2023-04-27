@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        containerView.delegate = self
         view.addSubview(containerView)
         containerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -48,29 +49,12 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UIPageViewControllerDataSource {
+extension ViewController: UIScrollViewDelegate {
 
-    func presentationCount(for pageViewController: UIPageViewController) -> Int {
-        controllers.count
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        print(scrollView.contentOffset)
     }
 
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        if let index = controllers.firstIndex(of: viewController),
-           index > 0 {
-            return controllers[index - 1]
-        } else {
-            return nil
-        }
-    }
-
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        if let index = controllers.firstIndex(of: viewController),
-           index < controllers.count - 1 {
-            return controllers[index + 1]
-        } else {
-            return nil
-        }
-    }
 }
 
 import SwiftUI
