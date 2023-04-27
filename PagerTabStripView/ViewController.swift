@@ -2,6 +2,10 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    private let headerView: HeaderView = {
+        HeaderView()
+    }()
+
     private let containerView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .brown
@@ -14,11 +18,20 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.addSubview(headerView)
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            view.topAnchor.constraint(equalTo: headerView.topAnchor),
+            view.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 44.0)
+        ])
+
         containerView.delegate = self
         view.addSubview(containerView)
         containerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: containerView.frameLayoutGuide.topAnchor),
+            headerView.bottomAnchor.constraint(equalTo: containerView.frameLayoutGuide.topAnchor),
             view.bottomAnchor.constraint(equalTo: containerView.frameLayoutGuide.bottomAnchor),
             view.leadingAnchor.constraint(equalTo: containerView.frameLayoutGuide.leadingAnchor),
             view.trailingAnchor.constraint(equalTo: containerView.frameLayoutGuide.trailingAnchor)
