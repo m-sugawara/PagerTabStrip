@@ -6,8 +6,18 @@ class HeaderView: UIView {
         let scrollView = UIScrollView()
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
+
+    private let markerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .green
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    private var markerViewLeadingConstraint: NSLayoutConstraint!
+    private var markerViewWidthConstraint: NSLayoutConstraint!
 
     private var buttons: [UIButton] = []
 
@@ -15,7 +25,6 @@ class HeaderView: UIView {
         super.init(frame: frame)
 
         addSubview(containerView)
-        containerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             topAnchor.constraint(equalTo: containerView.frameLayoutGuide.topAnchor),
             bottomAnchor.constraint(equalTo: containerView.frameLayoutGuide.bottomAnchor),
@@ -41,6 +50,18 @@ class HeaderView: UIView {
             containerView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor),
             containerView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
             containerView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor)
+        ])
+
+        containerView.addSubview(markerView)
+        markerViewLeadingConstraint = containerView.contentLayoutGuide.leadingAnchor.constraint(equalTo: markerView.leadingAnchor)
+        markerViewWidthConstraint =
+            markerView.widthAnchor.constraint(equalToConstant: 24.0)
+        NSLayoutConstraint.activate([
+            markerViewLeadingConstraint,
+            containerView.contentLayoutGuide.bottomAnchor.constraint(equalTo: markerView.bottomAnchor),
+            markerView.widthAnchor.constraint(equalToConstant: 24.0),
+            markerViewWidthConstraint,
+            markerView.heightAnchor.constraint(equalToConstant: 4.0)
         ])
     }
 
