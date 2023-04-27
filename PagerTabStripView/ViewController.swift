@@ -2,32 +2,49 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    private let containerViewController: UIPageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    private let containerView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.backgroundColor = .brown
+        scrollView.isPagingEnabled = true
+        return scrollView
+    }()
 
     private var controllers: [UIViewController] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        addChild(containerViewController)
-        containerViewController.view.backgroundColor = .brown
-        view.addSubview(containerViewController.view)
-        containerViewController.didMove(toParent: self)
-        containerViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(containerView)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: containerViewController.view.topAnchor),
-            view.bottomAnchor.constraint(equalTo: containerViewController.view.bottomAnchor),
-            view.leadingAnchor.constraint(equalTo: containerViewController.view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: containerViewController.view.trailingAnchor)
+            view.topAnchor.constraint(equalTo: containerView.frameLayoutGuide.topAnchor),
+            view.bottomAnchor.constraint(equalTo: containerView.frameLayoutGuide.bottomAnchor),
+            view.leadingAnchor.constraint(equalTo: containerView.frameLayoutGuide.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: containerView.frameLayoutGuide.trailingAnchor)
         ])
-        containerViewController.dataSource = self
 
         controllers = [UIColor.red, UIColor.blue, UIColor.green].map { color in
             let vc = UIViewController()
             vc.view.backgroundColor = color
+            vc.view.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                vc.view.widthAnchor.constraint(equalToConstant: view.frame.width),
+                vc.view.heightAnchor.constraint(equalToConstant: view.frame.height),
+            ])
             return vc
         }
-        containerViewController.setViewControllers([controllers[0]], direction: .forward, animated: true)
+
+        let stackView = UIStackView(arrangedSubviews: controllers.map { $0.view })
+        stackView.axis = .horizontal
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+
+        containerView.addSubview(stackView)
+        NSLayoutConstraint.activate([
+            containerView.contentLayoutGuide.topAnchor.constraint(equalTo: stackView.topAnchor),
+            containerView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor),
+            containerView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+            containerView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor)
+        ])
     }
 }
 
