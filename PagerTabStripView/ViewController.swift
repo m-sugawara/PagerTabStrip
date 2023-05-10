@@ -3,71 +3,66 @@ import UIKit
 class ViewController: UIViewController {
 
     private let headerView: HeaderView = {
-        HeaderView()
+        HeaderView() // このコントローラーでボタンを並べてもよし
     }()
 
     private let containerView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.backgroundColor = .brown
+        scrollView.backgroundColor = .purple
         scrollView.isPagingEnabled = true
+
         return scrollView
     }()
 
-    private var controllers: [UIViewController] = []
+  private var controllers: [UIViewController] = {
+    [UIColor.red, UIColor.blue, UIColor.green].map {
+      let vc = UIViewController()
+      vc.view.backgroundColor = $0
+      return vc
+    }
+  }()
+
+  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.addSubview(headerView)
-        headerView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: headerView.topAnchor),
-            view.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 44.0)
-        ])
-
-        containerView.delegate = self
         view.addSubview(containerView)
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            headerView.bottomAnchor.constraint(equalTo: containerView.frameLayoutGuide.topAnchor),
-            view.bottomAnchor.constraint(equalTo: containerView.frameLayoutGuide.bottomAnchor),
-            view.leadingAnchor.constraint(equalTo: containerView.frameLayoutGuide.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: containerView.frameLayoutGuide.trailingAnchor)
-        ])
-
-        controllers = [UIColor.red, UIColor.blue, UIColor.green].map { color in
-            let vc = UIViewController()
-            vc.view.backgroundColor = color
-            vc.view.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                vc.view.widthAnchor.constraint(equalToConstant: view.frame.width),
-                vc.view.heightAnchor.constraint(equalToConstant: view.frame.height),
-            ])
-            return vc
-        }
-
-        let stackView = UIStackView(arrangedSubviews: controllers.map { $0.view })
-        stackView.axis = .horizontal
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        containerView.addSubview(stackView)
-        NSLayoutConstraint.activate([
-            containerView.contentLayoutGuide.topAnchor.constraint(equalTo: stackView.topAnchor),
-            containerView.contentLayoutGuide.bottomAnchor.constraint(equalTo: stackView.bottomAnchor),
-            containerView.contentLayoutGuide.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
-            containerView.contentLayoutGuide.trailingAnchor.constraint(equalTo: stackView.trailingAnchor)
-        ])
+        containerView.delegate = self
+        controllers.forEach { vc in
+            vc.willMove(toParent: self)
+            addChild(vc)
+            containerView.addSubview(vc.view)
+          vc.didMove(toParent: self)
+      }
+      updateContent()
     }
+
+  override func viewDidLayoutSubviews() {
+    headerView.frame = CGRectMake(0, 0, containerView.bounds.width, 44)
+    containerView.frame = CGRectMake(0, 44, view.bounds.width, view.bounds.height - 44)
+    containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - 44)
+    controllers.enumerated().forEach { index, vc in
+      vc.view.frame = CGRectMake(CGFloat(index) * containerView.bounds.width, 0, containerView.bounds.width, containerView.bounds.height)
+    }
+  }
+
+  func updateContent() {
+    // ここで全てのレイアウトをする
+  }
 }
 
 extension ViewController: UIScrollViewDelegate {
-
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+      updateContent()
         print(scrollView.contentOffset)
     }
-
 }
 
 import SwiftUI
