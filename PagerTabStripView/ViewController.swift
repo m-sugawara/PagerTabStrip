@@ -9,6 +9,12 @@ class ViewController: UIViewController {
 
         return scrollView
     }()
+    private let markerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .green
+
+        return view
+    }()
     private var buttons: [UIButton] = []
 
     private let containerView: UIScrollView = {
@@ -27,6 +33,25 @@ class ViewController: UIViewController {
       return vc
     }
   }()
+    private var selectedIndex: Int {
+        let offset = containerView.contentOffset
+        guard containerView.bounds.width > 0 else { return 0 }
+        return Int(offset.x / containerView.bounds.width)
+    }
+    enum Direction {
+        case left
+        case right
+        case none
+    }
+    private var draggingDirection: Direction {
+        guard let previousContentOffset else { return .none }
+        if containerView.contentOffset.x == previousContentOffset.x {
+            return .none
+        } else {
+            return containerView.contentOffset.x > previousContentOffset.x ? .right : .left
+        }
+    }
+    private var previousContentOffset: CGPoint?
 
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -39,6 +64,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(headerView)
+        headerView.addSubview(markerView)
         view.addSubview(containerView)
         containerView.delegate = self
         controllers.forEach { vc in
@@ -66,6 +92,7 @@ class ViewController: UIViewController {
           totalWidth += width
       }
       headerView.contentSize = CGSizeMake(totalWidth, 44)
+      markerView.frame = CGRectMake(0, 39, buttons[0].bounds.width, 5)
 
       containerView.frame = CGRectMake(0, 44, view.bounds.width, view.bounds.height - 44)
       containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - 44)
@@ -76,14 +103,18 @@ class ViewController: UIViewController {
   }
 
   func updateContent() {
-    // ここで全てのレイアウトをする
+      print(selectedIndex)
+      print(draggingDirection)
+      // ここで全てのレイアウトをする
+      markerView.frame = CGRectMake(CGFloat(100 * selectedIndex), 39, buttons[0].bounds.width, 5)
   }
 }
 
 extension ViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-      updateContent()
+        updateContent()
         print(scrollView.contentOffset)
+        previousContentOffset = scrollView.contentOffset
     }
 }
 
