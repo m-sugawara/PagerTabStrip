@@ -53,6 +53,26 @@ class ViewController: UIViewController {
     }
     private var previousContentOffset: CGPoint?
 
+    private var nextIndex: Int {
+        switch draggingDirection {
+        case .right:
+            if selectedIndex == buttons.count - 1 {
+                return selectedIndex
+            } else {
+                // TODO: バウンスの時の補正を入れる
+                return selectedIndex + 1
+            }
+        case .left:
+            if selectedIndex == 0 {
+                return selectedIndex
+            } else {
+                // TODO: バウンスの時の補正を入れる
+                return selectedIndex - 1
+            }
+        case .none: return selectedIndex
+        }
+    }
+
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
   }
@@ -103,9 +123,9 @@ class ViewController: UIViewController {
   }
 
   func updateContent() {
-      print(selectedIndex)
-      print(draggingDirection)
+      print("selectedIndex: \(selectedIndex)")
       // ここで全てのレイアウトをする
+      print("nextIndex: \(nextIndex)")
       markerView.frame = CGRectMake(CGFloat(100 * selectedIndex), 39, buttons[0].bounds.width, 5)
   }
 }
