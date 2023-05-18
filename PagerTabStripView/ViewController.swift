@@ -2,14 +2,20 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    private let headerView: HeaderView = {
-        HeaderView() // このコントローラーでボタンを並べてもよし
+    private let headerView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.backgroundColor = .white
+        scrollView.alwaysBounceHorizontal = true
+
+        return scrollView
     }()
+    private var buttons: [UIButton] = []
 
     private let containerView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .purple
         scrollView.isPagingEnabled = true
+        scrollView.alwaysBounceHorizontal = true
 
         return scrollView
     }()
@@ -27,7 +33,7 @@ class ViewController: UIViewController {
   }
 
   required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+      super.init(coder: coder)
   }
 
     override func viewDidLoad() {
@@ -39,18 +45,34 @@ class ViewController: UIViewController {
             vc.willMove(toParent: self)
             addChild(vc)
             containerView.addSubview(vc.view)
-          vc.didMove(toParent: self)
-      }
-      updateContent()
+            vc.didMove(toParent: self)
+        }
+        for i in 0..<controllers.count {
+            let button = UIButton(type: .system)
+            button.setTitle("Button \(i)", for: .normal)
+            button.sizeToFit()
+            headerView.addSubview(button)
+            buttons.append(button)
+        }
+        updateContent()
     }
 
   override func viewDidLayoutSubviews() {
-    headerView.frame = CGRectMake(0, 0, containerView.bounds.width, 44)
-    containerView.frame = CGRectMake(0, 44, view.bounds.width, view.bounds.height - 44)
-    containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - 44)
-    controllers.enumerated().forEach { index, vc in
-      vc.view.frame = CGRectMake(CGFloat(index) * containerView.bounds.width, 0, containerView.bounds.width, containerView.bounds.height)
-    }
+      headerView.frame = CGRectMake(0, 0, containerView.bounds.width, 44)
+      var totalWidth: CGFloat = 0
+      buttons.forEach { button in
+          let width = button.bounds.width
+          button.frame = CGRectMake(totalWidth, 0, width, 44)
+          totalWidth += width
+      }
+      headerView.contentSize = CGSizeMake(totalWidth, 44)
+
+      containerView.frame = CGRectMake(0, 44, view.bounds.width, view.bounds.height - 44)
+      containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - 44)
+      controllers.enumerated().forEach { index, vc in
+          vc.view.frame = CGRectMake(CGFloat(index) * containerView.bounds.width, 0, containerView.bounds.width, containerView.bounds.height)
+      }
+
   }
 
   func updateContent() {
