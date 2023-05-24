@@ -22,7 +22,6 @@ class ViewController: UIViewController {
         scrollView.backgroundColor = .purple
         scrollView.isPagingEnabled = true
         scrollView.alwaysBounceHorizontal = true
-
         return scrollView
     }()
 
@@ -37,40 +36,6 @@ class ViewController: UIViewController {
         let offset = containerView.contentOffset
         guard containerView.bounds.width > 0 else { return 0 }
         return Int(offset.x / containerView.bounds.width)
-    }
-    enum Direction {
-        case left
-        case right
-        case none
-    }
-    private var draggingDirection: Direction {
-        guard let previousContentOffset else { return .none }
-        if containerView.contentOffset.x == previousContentOffset.x {
-            return .none
-        } else {
-            return containerView.contentOffset.x > previousContentOffset.x ? .right : .left
-        }
-    }
-    private var previousContentOffset: CGPoint?
-
-    private var nextIndex: Int {
-        switch draggingDirection {
-        case .right:
-            if selectedIndex == buttons.count - 1 {
-                return selectedIndex
-            } else {
-                // TODO: バウンスの時の補正を入れる
-                return selectedIndex + 1
-            }
-        case .left:
-            if selectedIndex == 0 {
-                return selectedIndex
-            } else {
-                // TODO: バウンスの時の補正を入れる
-                return selectedIndex - 1
-            }
-        case .none: return selectedIndex
-        }
     }
 
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -95,7 +60,7 @@ class ViewController: UIViewController {
         }
         for i in 0..<controllers.count {
             let button = UIButton(type: .system)
-            button.setTitle("Button \(i)", for: .normal)
+          button.setTitle("Button \(i)\((0..<Int.random(in: 0..<10)).map { "\($0)"})", for: .normal)
             button.sizeToFit()
             headerView.addSubview(button)
             buttons.append(button)
@@ -125,8 +90,15 @@ class ViewController: UIViewController {
   func updateContent() {
       print("selectedIndex: \(selectedIndex)")
       // ここで全てのレイアウトをする
-      print("nextIndex: \(nextIndex)")
-      markerView.frame = CGRectMake(CGFloat(100 * selectedIndex), 39, buttons[0].bounds.width, 5)
+    let f = buttons[selectedIndex].frame
+    UIView.animate(withDuration: 0.2) {
+      self.markerView.frame = CGRectMake(f.minX, 39, f.width, 5)
+      let hamide = f.maxX - self.view.frame.maxX
+      if (hamide > 0) {
+        self.headerView.contentOffset.x = self.headerView.contentOffset.x + (f.maxX - self.view.frame.maxX)
+      }
+    }
+    print(f.maxX - view.frame.maxX)
   }
 }
 
@@ -134,7 +106,6 @@ extension ViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateContent()
         print(scrollView.contentOffset)
-        previousContentOffset = scrollView.contentOffset
     }
 }
 
