@@ -70,22 +70,24 @@ class ViewController: UIViewController {
     }
 
   override func viewDidLayoutSubviews() {
-      headerView.frame = CGRectMake(0, 0, containerView.bounds.width, 44)
+      let topMargin = view.safeAreaInsets.top
+      let headerViewHeight: CGFloat = 44
+      headerView.frame = CGRectMake(0, topMargin, view.bounds.width, headerViewHeight)
       var totalWidth: CGFloat = 0
       buttons.forEach { button in
           let width = button.bounds.width
-          button.frame = CGRectMake(totalWidth, 0, width, 44)
+          button.frame = CGRectMake(totalWidth, 0, width, headerViewHeight)
           totalWidth += width
       }
-      headerView.contentSize = CGSizeMake(totalWidth, 44)
+      headerView.contentSize = CGSizeMake(totalWidth, headerViewHeight)
       markerView.frame = CGRectMake(0, 39, buttons[0].bounds.width, 5)
 
-      containerView.frame = CGRectMake(0, 44, view.bounds.width, view.bounds.height - 44)
-      containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - 44)
+      let containerViewMargin = topMargin + headerViewHeight + view.safeAreaInsets.bottom
+      containerView.frame = CGRectMake(0, topMargin + headerViewHeight, view.bounds.width, view.bounds.height - containerViewMargin)
+      containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - containerViewMargin)
       controllers.enumerated().forEach { index, vc in
           vc.view.frame = CGRectMake(CGFloat(index) * containerView.bounds.width, 0, containerView.bounds.width, containerView.bounds.height)
       }
-
   }
 
   func updateContent() {
