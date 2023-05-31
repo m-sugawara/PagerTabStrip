@@ -32,11 +32,21 @@ class ViewController: UIViewController {
       return vc
     }
   }()
-    private var selectedIndex: Int {
-        let offset = containerView.contentOffset
-        guard containerView.bounds.width > 0 else { return 0 }
-        return Int(offset.x / containerView.bounds.width)
+
+  private var selectedIndex: Int {
+    let offset = containerView.contentOffset
+    guard containerView.bounds.width > 0 else { return 0 }
+    let index = Int(round(offset.x / containerView.bounds.width))
+    if index > controllers.count - 1 {
+      return controllers.count - 1
+    } else if index < 0 {
+      return 0
+    } else {
+      return index
     }
+  }
+
+  private var previousIndex: Int?
 
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -92,16 +102,11 @@ class ViewController: UIViewController {
 
   func updateContent() {
       print("selectedIndex: \(selectedIndex)")
-      // ここで全てのレイアウトをする
+    if selectedIndex == previousIndex { return }
     let f = buttons[selectedIndex].frame
-    UIView.animate(withDuration: 0.2) {
-      self.markerView.frame = CGRectMake(f.minX, 39, f.width, 5)
-      let hamide = f.maxX - self.view.frame.maxX
-      if (hamide > 0) {
-        self.headerView.contentOffset.x = self.headerView.contentOffset.x + (f.maxX - self.view.frame.maxX)
-      }
-    }
-    print(f.maxX - view.frame.maxX)
+    markerView.frame = CGRectMake(f.minX, 39, f.width, 5)
+    headerView.setContentOffset(.init(x: f.minX - abs(view.bounds.width - f.width) * 0.5, y: 0), animated: true)
+    previousIndex = selectedIndex
   }
 
     @objc private func didTapbutton(_ target: UIButton) {
@@ -116,7 +121,6 @@ class ViewController: UIViewController {
 extension ViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateContent()
-        print(scrollView.contentOffset)
     }
 }
 
