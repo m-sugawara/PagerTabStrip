@@ -60,7 +60,8 @@ class ViewController: UIViewController {
         }
         for i in 0..<controllers.count {
             let button = UIButton(type: .system)
-          button.setTitle("Button \(i)\((0..<Int.random(in: 0..<10)).map { "\($0)"})", for: .normal)
+            button.setTitle("Button \(i)\((0..<Int.random(in: 0..<10)).map { "\($0)"})", for: .normal)
+            button.addTarget(self, action: #selector(didTapbutton), for: .touchUpInside)
             button.sizeToFit()
             headerView.addSubview(button)
             buttons.append(button)
@@ -100,6 +101,14 @@ class ViewController: UIViewController {
     }
     print(f.maxX - view.frame.maxX)
   }
+
+    @objc private func didTapbutton(_ target: UIButton) {
+        guard let index = buttons.firstIndex(of: target) else {
+            return
+        }
+        let offset = CGPoint(x: CGFloat(index) * self.view.frame.width, y: 0)
+        containerView.setContentOffset(offset, animated: true)
+    }
 }
 
 extension ViewController: UIScrollViewDelegate {
