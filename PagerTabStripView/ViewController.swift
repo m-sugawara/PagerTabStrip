@@ -101,11 +101,19 @@ class ViewController: UIViewController {
     }
 
     func updateContent() {
-        print("selectedIndex: \(selectedIndex)")
         if selectedIndex == previousIndex { return }
         let f = buttons[selectedIndex].frame
         markerView.frame = CGRectMake(f.minX, 39, f.width, 5)
-        headerView.setContentOffset(.init(x: f.minX - abs(view.bounds.width - f.width) * 0.5, y: 0), animated: true)
+        var centerXOffset = f.minX - abs(view.bounds.width - f.width) * 0.5
+        let maxCenterXOffset = headerView.contentSize.width - view.bounds.width
+        if centerXOffset < 0 {
+            centerXOffset = 0
+        } else if centerXOffset > maxCenterXOffset, maxCenterXOffset > 0 {
+            centerXOffset = maxCenterXOffset
+        }
+        headerView.setContentOffset(.init(x: centerXOffset, y: 0), animated: true)
+        print(centerXOffset)
+        print("contentSize.width", headerView.contentSize.width)
         previousIndex = selectedIndex
     }
 
