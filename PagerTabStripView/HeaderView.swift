@@ -32,6 +32,7 @@ class HeaderView: UIView {
             trailingAnchor.constraint(equalTo: containerView.frameLayoutGuide.trailingAnchor)
         ])
 
+
         buttons = (0...10).map { number in
             let button = UIButton(type: .custom)
             button.setTitle("Button\(number)", for: .normal)
@@ -55,7 +56,7 @@ class HeaderView: UIView {
         containerView.addSubview(markerView)
         markerViewLeadingConstraint = containerView.contentLayoutGuide.leadingAnchor.constraint(equalTo: markerView.leadingAnchor)
         markerViewWidthConstraint =
-            markerView.widthAnchor.constraint(equalToConstant: 24.0)
+        markerView.widthAnchor.constraint(equalToConstant: 24.0)
         NSLayoutConstraint.activate([
             markerViewLeadingConstraint,
             containerView.contentLayoutGuide.bottomAnchor.constraint(equalTo: markerView.bottomAnchor),
@@ -87,8 +88,8 @@ struct HeaderViewUIPresentetable: UIViewRepresentable {
 }
 
 struct HeaderViewUIPresentetable_Previews: PreviewProvider {
-  static var previews: some View {
-    HeaderViewUIPresentetable()
-  }
+    static var previews: some View {
+        HeaderViewUIPresentetable()
+    }
 }
 

@@ -47,7 +47,9 @@
 				B9460C2D29E8000D004534BE /* PagerTabStripView */,
 				B9460C2C29E8000D004534BE /* Products */,
 			);
+			indentWidth = 4;
 			sourceTree = "<group>";
+			tabWidth = 4;
 		};
 		B9460C2C29E8000D004534BE /* Products */ = {
 			isa = PBXGroup;

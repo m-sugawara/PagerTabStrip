@@ -25,36 +25,36 @@ class ViewController: UIViewController {
         return scrollView
     }()
 
-  private var controllers: [UIViewController] = {
-    [UIColor.red, UIColor.blue, UIColor.green].map {
-      let vc = UIViewController()
-      vc.view.backgroundColor = $0
-      return vc
+    private var controllers: [UIViewController] = {
+        [UIColor.red, UIColor.blue, UIColor.green].map {
+            let vc = UIViewController()
+            vc.view.backgroundColor = $0
+            return vc
+        }
+    }()
+
+    private var selectedIndex: Int {
+        let offset = containerView.contentOffset
+        guard containerView.bounds.width > 0 else { return 0 }
+        let index = Int(round(offset.x / containerView.bounds.width))
+        if index > controllers.count - 1 {
+            return controllers.count - 1
+        } else if index < 0 {
+            return 0
+        } else {
+            return index
+        }
     }
-  }()
 
-  private var selectedIndex: Int {
-    let offset = containerView.contentOffset
-    guard containerView.bounds.width > 0 else { return 0 }
-    let index = Int(round(offset.x / containerView.bounds.width))
-    if index > controllers.count - 1 {
-      return controllers.count - 1
-    } else if index < 0 {
-      return 0
-    } else {
-      return index
+    private var previousIndex: Int?
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
-  }
 
-  private var previousIndex: Int?
-
-  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-  }
-
-  required init?(coder: NSCoder) {
-      super.init(coder: coder)
-  }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,35 +79,35 @@ class ViewController: UIViewController {
         updateContent()
     }
 
-  override func viewDidLayoutSubviews() {
-      let topMargin = view.safeAreaInsets.top
-      let headerViewHeight: CGFloat = 44
-      headerView.frame = CGRectMake(0, topMargin, view.bounds.width, headerViewHeight)
-      var totalWidth: CGFloat = 0
-      buttons.forEach { button in
-          let width = button.bounds.width
-          button.frame = CGRectMake(totalWidth, 0, width, headerViewHeight)
-          totalWidth += width
-      }
-      headerView.contentSize = CGSizeMake(totalWidth, headerViewHeight)
-      markerView.frame = CGRectMake(0, 39, buttons[0].bounds.width, 5)
+    override func viewDidLayoutSubviews() {
+        let topMargin = view.safeAreaInsets.top
+        let headerViewHeight: CGFloat = 44
+        headerView.frame = CGRectMake(0, topMargin, view.bounds.width, headerViewHeight)
+        var totalWidth: CGFloat = 0
+        buttons.forEach { button in
+            let width = button.bounds.width
+            button.frame = CGRectMake(totalWidth, 0, width, headerViewHeight)
+            totalWidth += width
+        }
+        headerView.contentSize = CGSizeMake(totalWidth, headerViewHeight)
+        markerView.frame = CGRectMake(0, 39, buttons[0].bounds.width, 5)
 
-      let containerViewMargin = topMargin + headerViewHeight + view.safeAreaInsets.bottom
-      containerView.frame = CGRectMake(0, topMargin + headerViewHeight, view.bounds.width, view.bounds.height - containerViewMargin)
-      containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - containerViewMargin)
-      controllers.enumerated().forEach { index, vc in
-          vc.view.frame = CGRectMake(CGFloat(index) * containerView.bounds.width, 0, containerView.bounds.width, containerView.bounds.height)
-      }
-  }
+        let containerViewMargin = topMargin + headerViewHeight + view.safeAreaInsets.bottom
+        containerView.frame = CGRectMake(0, topMargin + headerViewHeight, view.bounds.width, view.bounds.height - containerViewMargin)
+        containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - containerViewMargin)
+        controllers.enumerated().forEach { index, vc in
+            vc.view.frame = CGRectMake(CGFloat(index) * containerView.bounds.width, 0, containerView.bounds.width, containerView.bounds.height)
+        }
+    }
 
-  func updateContent() {
-      print("selectedIndex: \(selectedIndex)")
-    if selectedIndex == previousIndex { return }
-    let f = buttons[selectedIndex].frame
-    markerView.frame = CGRectMake(f.minX, 39, f.width, 5)
-    headerView.setContentOffset(.init(x: f.minX - abs(view.bounds.width - f.width) * 0.5, y: 0), animated: true)
-    previousIndex = selectedIndex
-  }
+    func updateContent() {
+        print("selectedIndex: \(selectedIndex)")
+        if selectedIndex == previousIndex { return }
+        let f = buttons[selectedIndex].frame
+        markerView.frame = CGRectMake(f.minX, 39, f.width, 5)
+        headerView.setContentOffset(.init(x: f.minX - abs(view.bounds.width - f.width) * 0.5, y: 0), animated: true)
+        previousIndex = selectedIndex
+    }
 
     @objc private func didTapbutton(_ target: UIButton) {
         guard let index = buttons.firstIndex(of: target) else {
@@ -127,19 +127,19 @@ extension ViewController: UIScrollViewDelegate {
 import SwiftUI
 
 struct Abc: UIViewControllerRepresentable {
-  func makeUIViewController(context: Context) -> ViewController {
-    ViewController()
-  }
-  
-  func updateUIViewController(_ uiViewController: ViewController, context: Context) {
-  }
-  
-  typealias UIViewControllerType = ViewController
+    func makeUIViewController(context: Context) -> ViewController {
+        ViewController()
+    }
+
+    func updateUIViewController(_ uiViewController: ViewController, context: Context) {
+    }
+
+    typealias UIViewControllerType = ViewController
 }
 
 struct Abc_Previews: PreviewProvider {
-  static var previews: some View {
-    Abc()
-  }
+    static var previews: some View {
+        Abc()
+    }
 }
 
