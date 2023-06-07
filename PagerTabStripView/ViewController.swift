@@ -70,7 +70,7 @@ class ViewController: UIViewController {
         }
         for i in 0..<controllers.count {
             let button = UIButton(type: .system)
-            button.setTitle("Button \(i)\((0..<Int.random(in: 0..<10)).map { "\($0)"})", for: .normal)
+            button.setTitle("Button \(i)\((0..<Int.random(in: 0..<5)).map { "\($0)"})", for: .normal)
             button.addTarget(self, action: #selector(didTapbutton), for: .touchUpInside)
             button.sizeToFit()
             headerView.addSubview(button)
@@ -83,6 +83,7 @@ class ViewController: UIViewController {
         let topMargin = view.safeAreaInsets.top
         let headerViewHeight: CGFloat = 44
         headerView.frame = CGRectMake(0, topMargin, view.bounds.width, headerViewHeight)
+
         var totalWidth: CGFloat = 0
         buttons.forEach { button in
             let width = button.bounds.width
@@ -90,7 +91,16 @@ class ViewController: UIViewController {
             totalWidth += width
         }
         headerView.contentSize = CGSizeMake(totalWidth, headerViewHeight)
-        markerView.frame = CGRectMake(0, 39, buttons[0].bounds.width, 5)
+
+        if totalWidth <= view.bounds.width {
+            let width = view.bounds.width / CGFloat(buttons.isEmpty ? 1 : buttons.count)
+            buttons.enumerated().forEach { index, button in
+                button.frame = CGRectMake(width * CGFloat(index), 0, width, headerViewHeight)
+            }
+            headerView.contentSize = CGSizeMake(view.bounds.width, headerViewHeight)
+        }
+
+        markerView.frame = CGRectMake(0, 39, buttons.first?.bounds.width ?? view.bounds.width, 5)
 
         let containerViewMargin = topMargin + headerViewHeight + view.safeAreaInsets.bottom
         containerView.frame = CGRectMake(0, topMargin + headerViewHeight, view.bounds.width, view.bounds.height - containerViewMargin)
@@ -108,7 +118,7 @@ class ViewController: UIViewController {
         let maxCenterXOffset = headerView.contentSize.width - view.bounds.width
         if centerXOffset < 0 {
             centerXOffset = 0
-        } else if centerXOffset > maxCenterXOffset, maxCenterXOffset > 0 {
+        } else if centerXOffset > maxCenterXOffset, maxCenterXOffset >= 0 {
             centerXOffset = maxCenterXOffset
         }
         headerView.setContentOffset(.init(x: centerXOffset, y: 0), animated: true)
