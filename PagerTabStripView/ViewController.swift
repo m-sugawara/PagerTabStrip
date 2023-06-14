@@ -48,6 +48,10 @@ class ViewController: UIViewController {
 
     private var previousIndex: Int?
 
+    private var containerViewWidth: CGFloat {
+        view.bounds.width - (view.safeAreaInsets.left + view.safeAreaInsets.right)
+    }
+
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -81,30 +85,35 @@ class ViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         let topMargin = view.safeAreaInsets.top
+        let bottomMargin = view.safeAreaInsets.bottom
+        let viewWidth = containerViewWidth
+        let minX = view.safeAreaInsets.left
         let headerViewHeight: CGFloat = 44
-        headerView.frame = CGRectMake(0, topMargin, view.bounds.width, headerViewHeight)
+        headerView.frame = CGRectMake(minX, topMargin, viewWidth, headerViewHeight)
 
         var totalWidth: CGFloat = 0
         buttons.forEach { button in
+            button.sizeToFit()
             let width = button.bounds.width
             button.frame = CGRectMake(totalWidth, 0, width, headerViewHeight)
             totalWidth += width
         }
         headerView.contentSize = CGSizeMake(totalWidth, headerViewHeight)
 
-        if totalWidth <= view.bounds.width {
-            let width = view.bounds.width / CGFloat(buttons.isEmpty ? 1 : buttons.count)
+        if totalWidth <= viewWidth {
+            let width = viewWidth / CGFloat(buttons.isEmpty ? 1 : buttons.count)
             buttons.enumerated().forEach { index, button in
                 button.frame = CGRectMake(width * CGFloat(index), 0, width, headerViewHeight)
             }
-            headerView.contentSize = CGSizeMake(view.bounds.width, headerViewHeight)
+            headerView.contentSize = CGSizeMake(viewWidth, headerViewHeight)
         }
 
-        markerView.frame = CGRectMake(0, 39, buttons.first?.bounds.width ?? view.bounds.width, 5)
+        markerView.frame = CGRectMake(0, 39, buttons.first?.bounds.width ?? viewWidth, 5)
 
-        let containerViewMargin = topMargin + headerViewHeight + view.safeAreaInsets.bottom
-        containerView.frame = CGRectMake(0, topMargin + headerViewHeight, view.bounds.width, view.bounds.height - containerViewMargin)
-        containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * view.bounds.width, view.bounds.height - containerViewMargin)
+        print("safeArea", view.safeAreaInsets)
+        let containerViewMargin = topMargin + headerViewHeight + bottomMargin
+        containerView.frame = CGRectMake(minX, topMargin + headerViewHeight, viewWidth, view.bounds.height - containerViewMargin)
+        containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * viewWidth, view.bounds.height - containerViewMargin)
         controllers.enumerated().forEach { index, vc in
             vc.view.frame = CGRectMake(CGFloat(index) * containerView.bounds.width, 0, containerView.bounds.width, containerView.bounds.height)
         }
@@ -114,8 +123,8 @@ class ViewController: UIViewController {
         if selectedIndex == previousIndex { return }
         let f = buttons[selectedIndex].frame
         markerView.frame = CGRectMake(f.minX, 39, f.width, 5)
-        var centerXOffset = f.minX - abs(view.bounds.width - f.width) * 0.5
-        let maxCenterXOffset = headerView.contentSize.width - view.bounds.width
+        var centerXOffset = f.minX - abs(containerViewWidth - f.width) * 0.5
+        let maxCenterXOffset = headerView.contentSize.width - containerViewWidth
         if centerXOffset < 0 {
             centerXOffset = 0
         } else if centerXOffset > maxCenterXOffset, maxCenterXOffset >= 0 {
@@ -131,7 +140,7 @@ class ViewController: UIViewController {
         guard let index = buttons.firstIndex(of: target) else {
             return
         }
-        let offset = CGPoint(x: CGFloat(index) * self.view.frame.width, y: 0)
+        let offset = CGPoint(x: CGFloat(index) * containerViewWidth, y: 0)
         containerView.setContentOffset(offset, animated: true)
     }
 }
