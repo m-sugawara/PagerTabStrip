@@ -1,5 +1,7 @@
 import UIKit
 
+// 次は回転した後に selectedIndex が更新されてしまう挙動を修正する
+
 class ViewController: UIViewController {
 
     private let headerView: UIScrollView = {
