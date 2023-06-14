@@ -80,7 +80,7 @@ class ViewController: UIViewController {
             headerView.addSubview(button)
             buttons.append(button)
         }
-        updateContent()
+        updateMarkerViewLayout()
     }
 
     override func viewDidLayoutSubviews() {
@@ -108,19 +108,20 @@ class ViewController: UIViewController {
             headerView.contentSize = CGSizeMake(viewWidth, headerViewHeight)
         }
 
-        markerView.frame = CGRectMake(0, 39, buttons.first?.bounds.width ?? viewWidth, 5)
-
-        print("safeArea", view.safeAreaInsets)
         let containerViewMargin = topMargin + headerViewHeight + bottomMargin
         containerView.frame = CGRectMake(minX, topMargin + headerViewHeight, viewWidth, view.bounds.height - containerViewMargin)
         containerView.contentSize = CGSizeMake(CGFloat(controllers.count) * viewWidth, view.bounds.height - containerViewMargin)
         controllers.enumerated().forEach { index, vc in
             vc.view.frame = CGRectMake(CGFloat(index) * containerView.bounds.width, 0, containerView.bounds.width, containerView.bounds.height)
         }
+
+        let offset = CGPoint(x: CGFloat(selectedIndex) * containerViewWidth, y: 0)
+        containerView.setContentOffset(offset, animated: true)
+
+        updateMarkerViewLayout()
     }
 
-    func updateContent() {
-        if selectedIndex == previousIndex { return }
+    func updateMarkerViewLayout() {
         let f = buttons[selectedIndex].frame
         markerView.frame = CGRectMake(f.minX, 39, f.width, 5)
         var centerXOffset = f.minX - abs(containerViewWidth - f.width) * 0.5
@@ -131,8 +132,7 @@ class ViewController: UIViewController {
             centerXOffset = maxCenterXOffset
         }
         headerView.setContentOffset(.init(x: centerXOffset, y: 0), animated: true)
-        print(centerXOffset)
-        print("contentSize.width", headerView.contentSize.width)
+
         previousIndex = selectedIndex
     }
 
@@ -147,7 +147,7 @@ class ViewController: UIViewController {
 
 extension ViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        updateContent()
+        updateMarkerViewLayout()
     }
 }
 
