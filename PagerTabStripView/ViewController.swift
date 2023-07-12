@@ -1,7 +1,5 @@
 import UIKit
 
-// 次は回転した後に selectedIndex が更新されてしまう挙動を修正する
-
 class ViewController: UIViewController {
 
     private let headerView: UIScrollView = {
@@ -47,6 +45,7 @@ class ViewController: UIViewController {
             return index
         }
     }
+    private var lastSelectedIndex: Int?
 
     private var previousIndex: Int?
 
@@ -83,6 +82,18 @@ class ViewController: UIViewController {
             buttons.append(button)
         }
         updateMarkerViewLayout()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        lastSelectedIndex = selectedIndex
+        super.viewWillTransition(to: size, with: coordinator)
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        if let lastSelectedIndex {
+            containerView.contentOffset = .init(x: CGFloat(lastSelectedIndex) * containerView.bounds.width, y: 0)
+        }
     }
 
     override func viewDidLayoutSubviews() {
